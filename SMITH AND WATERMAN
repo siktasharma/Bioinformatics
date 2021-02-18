@@ -1,0 +1,142 @@
+{
+ "metadata": {
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.9-final"
+  },
+  "orig_nbformat": 2,
+  "kernelspec": {
+   "name": "python3",
+   "display_name": "Python 3",
+   "language": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2,
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "####----------------SMITH AND WATERMAN------#"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sequence_1 = input(\"Enter or paste sequence 1:\")\n",
+    "sequence_2 = input(\"Enter or paste sequence 2:\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stdout",
+     "text": [
+      "[]\n[[0.]]\n0.0\n0\n0\n\n\n"
+     ]
+    }
+   ],
+   "source": [
+    "#sequence_1 = \"ATCGT\"\n",
+    "#sequence_2 = \"ACGT\"\n",
+    "\n",
+    "#Creat Matrices\n",
+    "main_matrix = np.zeros((len(sequence_1)+1,len(sequence_2)+1))\n",
+    "match_checker_matrix = np.zeros((len(sequence_1),len(sequence_2)))\n",
+    "\n",
+    "# Providing the scores for match ,mismatch and gap\n",
+    "match_reward = 1\n",
+    "mismatch_penalty = -1\n",
+    "gap_penalty = -2\n",
+    "\n",
+    "#Fill the match checker matrix accrording to match or mismatch\n",
+    "for i in range(len(sequence_1)):\n",
+    "    for j in range(len(sequence_2)):\n",
+    "        if sequence_1[i] == sequence_2[j]:\n",
+    "            match_checker_matrix[i][j]= match_reward\n",
+    "        else:\n",
+    "            match_checker_matrix[i][j]= mismatch_penalty\n",
+    "\n",
+    "print(match_checker_matrix)\n",
+    "\n",
+    "#Filling up the matrix using Needleman_Wunsch algorithm\n",
+    "#STEP 1 : Initialisation\n",
+    "for i in range(len(sequence_1)+1):\n",
+    "    main_matrix[i][0] = 0\n",
+    "for j in range(len(sequence_2)+1):\n",
+    "    main_matrix[0][j] = 0\n",
+    "\n",
+    "#STEP 2 : Matrix Filling\n",
+    "for i in range(1,len(sequence_1)+1):\n",
+    "    for j in range(1,len(sequence_2)+1):\n",
+    "        main_matrix[i][j] = max(main_matrix[i-1][j-1]+match_checker_matrix[i-1][j-1],\n",
+    "                                main_matrix[i-1][j]+gap_penalty,\n",
+    "                                main_matrix[i][j-1]+ gap_penalty,0)\n",
+    "\n",
+    "print(main_matrix)\n",
+    "result = np.where(main_matrix == np.amax(main_matrix))\n",
+    "listOfCordinates = list(zip(result[0], result[1]))\n",
+    "# STEP 3 : Traceback\n",
+    "print (np.amax(main_matrix))\n",
+    "aligned_1 = \"\"\n",
+    "aligned_2 = \"\"\n",
+    "\n",
+    "ti = result[0][0]\n",
+    "tj = result[1][0]\n",
+    "print (ti)\n",
+    "print (tj)\n",
+    "while(ti >0 and tj > 0):\n",
+    "\n",
+    "    if (ti > 0 and tj > 0 and main_matrix[ti][tj] == (main_matrix[ti-1][tj-1] + 1) ):\n",
+    "\n",
+    "        aligned_1 = sequence_1[ti-1] + aligned_1\n",
+    "        aligned_2 = sequence_2[tj-1] + aligned_2\n",
+    "\n",
+    "        ti = ti - 1\n",
+    "        tj = tj - 1\n",
+    "    \n",
+    "    elif(ti > 0 and tj > 0 and main_matrix[ti-1][tj-1] == 0):\n",
+    "        ti = 0\n",
+    "        tj = 0\n",
+    "\n",
+    "#test\n",
+    "print(aligned_1)\n",
+    "print(aligned_2)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ]
+}
